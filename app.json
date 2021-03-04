@@ -31,6 +31,10 @@
     "web": {
       "favicon": "./assets/images/favicon.png"
     },
+    "extra": {
+      "API_URL": "https://wookie.codesubmit.io",
+      "API_KEY": "Bearer Wookie2019"
+    },
     "privacy": "unlisted"
   }
 }

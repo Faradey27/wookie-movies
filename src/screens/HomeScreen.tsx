@@ -1,5 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { useDispatch } from "react-redux";
+
+import {
+  fetchMoviesAsyncAction,
+  selectMoviesIdsByGenre,
+  useAppSelector,
+} from "../data";
 
 const styles = StyleSheet.create({
   container: {
@@ -18,8 +25,25 @@ const styles = StyleSheet.create({
   },
 });
 
-export const HomeScreen = () => (
-  <View style={styles.container}>
-    <Text style={styles.title}>Home</Text>
-  </View>
-);
+export const HomeScreen = () => {
+  const dispatch = useDispatch();
+  const moviesIdsByGenres = useAppSelector(selectMoviesIdsByGenre);
+
+  useEffect(() => {
+    dispatch(fetchMoviesAsyncAction());
+  }, [dispatch]);
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Home Screen</Text>
+      {moviesIdsByGenres.map(({ name, ids }) => (
+        <span key={name}>
+          {name}
+          {ids.map((id) => (
+            <span key={id}>{id}</span>
+          ))}
+        </span>
+      ))}
+    </View>
+  );
+};

@@ -1,5 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { useDispatch } from "react-redux";
+
+import { useAppSelector } from "../data";
+import {
+  searchMoviesAsyncAction,
+  selectFilteredMoviesIds,
+} from "../data/slices/filteredMoviesSlice";
 
 const styles = StyleSheet.create({
   container: {
@@ -18,8 +25,20 @@ const styles = StyleSheet.create({
   },
 });
 
-export const SearchScreen = () => (
-  <View style={styles.container}>
-    <Text style={styles.title}>Search</Text>
-  </View>
-);
+export const SearchScreen = () => {
+  const dispatch = useDispatch();
+  const filteredMoviesIds = useAppSelector(selectFilteredMoviesIds);
+
+  useEffect(() => {
+    dispatch(searchMoviesAsyncAction("Dark"));
+  }, [dispatch]);
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Search</Text>
+      {filteredMoviesIds.map((id) => (
+        <span key={id}>{id}</span>
+      ))}
+    </View>
+  );
+};
