@@ -1,0 +1,24 @@
+import React from "react";
+import { StyleSheet, Text } from "react-native";
+
+type TitleProps = {
+  size?: "small" | "default" | "large";
+  color?: string;
+  children: string;
+};
+
+const sizeStyles = StyleSheet.create({
+  small: {
+    fontSize: 14,
+  },
+  default: {
+    fontSize: 18,
+  },
+  large: {
+    fontSize: 24,
+  },
+});
+
+export const Title = ({ size = "default", color, children }: TitleProps) => (
+  <Text style={[sizeStyles[size], { color }]}>{children}</Text>
+);

@@ -1,7 +1,10 @@
 import React, { useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { SectionList, StyleSheet, View } from "react-native";
+import { FlatList } from "react-native-gesture-handler";
 import { useDispatch } from "react-redux";
 
+import { MoviePreviewCard } from "../components/MoviePreviewCard";
+import { Title } from "../components/Title";
 import {
   fetchMoviesAsyncAction,
   selectMoviesIdsByGenre,
@@ -11,19 +14,52 @@ import {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: "white",
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
+  sectionList: {
+    paddingLeft: 24,
+    paddingRight: 16,
+    marginTop: 12,
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
+  sectionTitle: {
+    marginTop: 24,
+    marginLeft: 24,
+  },
+  movieCard: {
+    marginRight: 8,
   },
 });
+
+type Section = {
+  title: string;
+  data: string[];
+};
+
+const keyExtractor = (id: string) => id;
+
+const renderSectionItem = () => null;
+
+const renderGenreItem = ({ item: id }: { item: string }) => (
+  <View style={styles.movieCard}>
+    <MoviePreviewCard id={id} />
+  </View>
+);
+
+const renderSectionHeader = ({ section }: { section: Section }) => (
+  <>
+    <View style={styles.sectionTitle}>
+      <Title>{section.title}</Title>
+    </View>
+    <FlatList
+      contentContainerStyle={styles.sectionList}
+      horizontal
+      data={section.data}
+      keyExtractor={keyExtractor}
+      renderItem={renderGenreItem}
+      showsHorizontalScrollIndicator={false}
+    />
+  </>
+);
 
 export const HomeScreen = () => {
   const dispatch = useDispatch();
@@ -35,15 +71,13 @@ export const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Home Screen</Text>
-      {moviesIdsByGenres.map(({ name, ids }) => (
-        <span key={name}>
-          {name}
-          {ids.map((id) => (
-            <span key={id}>{id}</span>
-          ))}
-        </span>
-      ))}
+      <SectionList
+        keyExtractor={keyExtractor}
+        sections={moviesIdsByGenres}
+        renderSectionHeader={renderSectionHeader}
+        renderItem={renderSectionItem}
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   );
 };

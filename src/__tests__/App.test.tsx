@@ -14,7 +14,7 @@ it(`renders correctly`, async () => {
       <AppNavigator />
     </Provider>
   );
-  const title = await findByText("Home Screen");
+  const title = await findByText("Home");
 
   expect(title).toBeTruthy();
 });

@@ -61,7 +61,7 @@ export const selectMoviesIdsByGenre = createSelector(
         if (genres[genreName]) {
           genres[genreName].add(movie.id);
         } else {
-          genres[genreName] = new Set(movie.id);
+          genres[genreName] = new Set([movie.id]);
         }
 
         return genres;
@@ -70,9 +70,11 @@ export const selectMoviesIdsByGenre = createSelector(
       return genres;
     }, {} as Genre);
 
-    return Object.entries(moviesIdsByGenre).map(([name, ids]) => ({
-      name,
-      ids: [...ids],
+    return Object.entries(moviesIdsByGenre).map(([title, ids]) => ({
+      title,
+      data: Array.from(ids),
     }));
   }
 );
+
+export const selectMovieById = moviesSelectors.selectById;
