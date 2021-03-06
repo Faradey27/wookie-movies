@@ -1,18 +1,23 @@
-import React, { useEffect, useRef, useState } from "react";
-import { defineMessages, useIntl } from "react-intl";
-import { StyleSheet, View } from "react-native";
+import React, { memo, useEffect, useMemo, useRef, useState } from "react";
+import { defineMessages, FormattedMessage, useIntl } from "react-intl";
+import { Platform, StyleSheet, View } from "react-native";
 import { FlatList, TextInput } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch } from "react-redux";
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
+import { EmptyState } from "../components/EmptyState";
+import { LoadingStateView } from "../components/LoadingStateView";
 import { MoviePreviewCard } from "../components/MoviePreviewCard";
 import { Title } from "../components/Title";
-import { useAppSelector } from "../data";
 import {
+  LoadingState,
   searchMoviesAsyncAction,
   selectFilteredMoviesIds,
-} from "../data/slices/filteredMoviesSlice";
+  selectFilteredMoviesLoadingState,
+  useAppSelector,
+} from "../data";
 
 const messages = defineMessages({
   title: {
@@ -23,6 +28,10 @@ const messages = defineMessages({
     id: "SearchScreen.searchPlaceholder",
     defaultMessage: "Movie name",
   },
+  empty: {
+    id: "SearchScreen.empty",
+    defaultMessage: "Nothing found",
+  },
 });
 
 const styles = StyleSheet.create({
@@ -30,7 +39,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
     paddingHorizontal: 24,
-    paddingTop: 24,
   },
   autocomplete: {
     position: "relative",
@@ -39,7 +47,9 @@ const styles = StyleSheet.create({
   },
   searchIcon: {
     position: "absolute",
-    top: 10,
+    zIndex: 1,
+    // TODO fix small platform trick
+    top: Platform.select({ ios: 10, android: 14 }),
     left: 12,
   },
   searchInput: {
@@ -49,11 +59,11 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   autocompleteList: {
-    marginTop: 16,
+    paddingTop: 16,
   },
   autocompleteListContainer: {
-    flex: 1,
     alignItems: "center",
+    paddingBottom: 32,
   },
   movieCard: {
     marginBottom: 16,
@@ -64,18 +74,24 @@ const styles = StyleSheet.create({
 
 const keyExtractor = (id: string) => id;
 
-const renderMovieItem = ({ item: id }: { item: string }) => (
+const renderMovieItem = ({ item }: { item: string }) => (
   <View style={styles.movieCard}>
-    <MoviePreviewCard id={id} />
+    <MoviePreviewCard id={item} />
   </View>
 );
 
-export const SearchScreen = () => {
+export const SearchScreen = memo(() => {
+  const safeAreaInsets = useSafeAreaInsets();
+  const safeAreaStyle = useMemo(
+    () => ({ flex: 1, paddingTop: safeAreaInsets.top }),
+    [safeAreaInsets]
+  );
   const intl = useIntl();
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const inputRef = useRef<TextInput & { focus: () => void }>(null);
   const filteredMoviesIds = useAppSelector(selectFilteredMoviesIds);
+  const loadingState = useAppSelector(selectFilteredMoviesLoadingState);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
@@ -91,7 +107,7 @@ export const SearchScreen = () => {
   }, [dispatch, search]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, safeAreaStyle]}>
       <Title>{intl.formatMessage(messages.title)}</Title>
       <View style={styles.autocomplete}>
         <FontAwesome name="search" size={20} style={styles.searchIcon} />
@@ -100,17 +116,28 @@ export const SearchScreen = () => {
           placeholder={intl.formatMessage(messages.searchPlaceholder)}
           style={styles.searchInput}
           value={search}
+          placeholderTextColor="gray"
           onChangeText={setSearch}
         />
       </View>
-      <FlatList
-        style={styles.autocompleteList}
-        contentContainerStyle={styles.autocompleteListContainer}
-        data={filteredMoviesIds}
-        keyExtractor={keyExtractor}
-        renderItem={renderMovieItem}
-        showsHorizontalScrollIndicator={false}
-      />
+      <LoadingStateView
+        isEmpty={
+          loadingState === LoadingState.loaded && !filteredMoviesIds.length
+        }
+        emptyComponent={
+          <EmptyState title={<FormattedMessage {...messages.empty} />} />
+        }
+        loadingState={loadingState}
+      >
+        <FlatList
+          style={styles.autocompleteList}
+          contentContainerStyle={styles.autocompleteListContainer}
+          data={filteredMoviesIds}
+          keyExtractor={keyExtractor}
+          renderItem={renderMovieItem}
+          showsVerticalScrollIndicator={false}
+        />
+      </LoadingStateView>
     </View>
   );
-};
+});

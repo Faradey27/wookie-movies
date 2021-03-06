@@ -1,12 +1,18 @@
-import React, { useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import { defineMessage, FormattedMessage } from "react-intl";
 import { Animated, StyleSheet, Text, View } from "react-native";
 import { useCollapsibleHeader } from "react-navigation-collapsible";
+import { useSelector } from "react-redux";
 import { useRoute } from "@react-navigation/native";
 import { StackHeaderProps } from "@react-navigation/stack";
 
+import { LoadingStateView } from "../components/LoadingStateView";
 import { MovieDetailsHeader } from "../components/MovieDetailsHeader";
-import { selectMovieById, useAppSelector } from "../data";
+import {
+  selectMovieById,
+  selectMoviesLoadingState,
+  useAppSelector,
+} from "../data";
 import { MovieDetailsRouteProp } from "../navigation/routes";
 
 const messages = defineMessage({
@@ -26,7 +32,9 @@ const messages = defineMessage({
 
 const styles = StyleSheet.create({
   container: {
+    position: "relative",
     backgroundColor: "white",
+    height: "100%",
   },
   content: {
     height: "100%",
@@ -49,20 +57,21 @@ const styles = StyleSheet.create({
   },
 });
 
-const getHeaderConfig = (id: string) => ({
+const getHeaderConfig = () => ({
   navigationOptions: {
     header: ({ previous }: StackHeaderProps) => (
-      <MovieDetailsHeader id={id} previous={Boolean(previous)} />
+      <MovieDetailsHeader previous={Boolean(previous)} />
     ),
   },
   config: { useNativeDriver: true },
 });
 
-export const MovieDetailsScreen = () => {
+export const MovieDetailsScreen = memo(() => {
   const route = useRoute<MovieDetailsRouteProp>();
   const { id } = route.params;
   const movieData = useAppSelector((state) => selectMovieById(state, id));
-  const headerConfig = useMemo(() => getHeaderConfig(id), [id]);
+  const headerConfig = useMemo(() => getHeaderConfig(), []);
+  const loadingState = useSelector(selectMoviesLoadingState);
 
   const {
     containerPaddingTop,
@@ -85,35 +94,40 @@ export const MovieDetailsScreen = () => {
     : "???";
 
   return (
-    <View style={styles.container}>
-      <Animated.ScrollView
-        contentContainerStyle={contentContainerStyle}
-        scrollIndicatorInsets={scrollIndicatorInsets}
-        onScroll={onScroll}
-      >
-        <Text>
-          <FormattedMessage
-            {...messages.movieInfo}
-            values={{
-              year,
-              duration: movieData?.length,
-              director: movieData?.director,
-            }}
-          />
-        </Text>
-        <Text style={styles.item}>
-          <FormattedMessage
-            {...messages.cast}
-            values={{ value: movieData?.cast?.join(", ") }}
-          />
-        </Text>
-        <Text style={styles.item}>
-          <FormattedMessage
-            {...messages.moviewDescription}
-            values={{ value: movieData?.overview }}
-          />
-        </Text>
-      </Animated.ScrollView>
+    <View
+      style={styles.container}
+      testID={`MovieDetailsScreen-${movieData?.title}`}
+    >
+      <LoadingStateView loadingState={loadingState}>
+        <Animated.ScrollView
+          contentContainerStyle={contentContainerStyle}
+          scrollIndicatorInsets={scrollIndicatorInsets}
+          onScroll={onScroll}
+        >
+          <Text>
+            <FormattedMessage
+              {...messages.movieInfo}
+              values={{
+                year,
+                duration: movieData?.length,
+                director: movieData?.director,
+              }}
+            />
+          </Text>
+          <Text style={styles.item}>
+            <FormattedMessage
+              {...messages.cast}
+              values={{ value: movieData?.cast?.join(", ") }}
+            />
+          </Text>
+          <Text style={styles.item}>
+            <FormattedMessage
+              {...messages.moviewDescription}
+              values={{ value: movieData?.overview }}
+            />
+          </Text>
+        </Animated.ScrollView>
+      </LoadingStateView>
     </View>
   );
-};
+});

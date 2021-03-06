@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const MoviePreviewCard = ({ id }: MoviePreviewCardProps) => {
+export const MoviePreviewCard = memo(({ id }: MoviePreviewCardProps) => {
   const navigation = useNavigation();
   const movieData = useAppSelector((state) => selectMovieById(state, id));
   const isFavorite = useAppSelector((state) =>
@@ -49,7 +49,11 @@ export const MoviePreviewCard = ({ id }: MoviePreviewCardProps) => {
   );
 
   return (
-    <TouchableOpacity style={styles.container} onPress={handlePress}>
+    <TouchableOpacity
+      style={styles.container}
+      testID={movieData?.title}
+      onPress={handlePress}
+    >
       <Image style={styles.poster} source={source} />
       <View style={styles.favoriteContainer}>
         {isFavorite ? (
@@ -58,4 +62,4 @@ export const MoviePreviewCard = ({ id }: MoviePreviewCardProps) => {
       </View>
     </TouchableOpacity>
   );
-};
+});

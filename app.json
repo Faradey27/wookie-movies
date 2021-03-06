@@ -26,7 +26,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.faradey27.wookiemovies1vezbji"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"

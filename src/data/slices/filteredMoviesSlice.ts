@@ -50,3 +50,6 @@ const filteredMoviesSelectors = filteredMoviesAdapter.getSelectors<State>(
 export const selectFilteredMoviesIds = filteredMoviesSelectors.selectIds as (
   state: State
 ) => string[];
+
+export const selectFilteredMoviesLoadingState = (state: State) =>
+  state.filteredMovies.loadingState;

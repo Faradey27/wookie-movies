@@ -25,14 +25,14 @@ const BottomTab = createBottomTabNavigator();
 
 const HomeStack = createStackNavigator<HomeStackParamList>();
 
-const noHeader = { headerShown: false };
+const noHeaderOptions = { headerShown: false };
 
 const HomeNavigator = () => (
-  <HomeStack.Navigator>
+  <HomeStack.Navigator mode="modal">
     <HomeStack.Screen
       name={Routes.Home}
       component={HomeScreen}
-      options={noHeader}
+      options={noHeaderOptions}
     />
     <HomeStack.Screen
       name={Routes.MovieDetails}

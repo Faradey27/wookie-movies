@@ -94,3 +94,6 @@ export const selectMovieById = moviesSelectors.selectById;
 
 export const selectIsFavoriteMovie = (state: State, id: string) =>
   state.movies.favoriteMovies[id];
+
+export const selectMoviesLoadingState = (state: State) =>
+  state.movies.loadingState;

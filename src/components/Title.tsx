@@ -1,10 +1,10 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { StyleSheet, Text } from "react-native";
 
 type TitleProps = {
   size?: "small" | "default" | "large";
   color?: string;
-  children: string;
+  children: ReactNode;
   textAlign?: "auto" | "left" | "right" | "center" | "justify";
 };
 
