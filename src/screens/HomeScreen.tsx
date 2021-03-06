@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
   },
+  contentContainer: { marginBottom: 32 },
   sectionList: {
     paddingLeft: 24,
     paddingRight: 16,
@@ -27,6 +28,13 @@ const styles = StyleSheet.create({
   },
   movieCard: {
     marginRight: 8,
+    width: 120,
+    height: 180,
+  },
+  titleContainer: {
+    flex: 1,
+    alignItems: "center",
+    marginTop: 24,
   },
 });
 
@@ -61,6 +69,18 @@ const renderSectionHeader = ({ section }: { section: Section }) => (
   </>
 );
 
+const ListHeaderComponent = () => {
+  const title = `WOOKIE\n MOVIES`;
+
+  return (
+    <View style={styles.titleContainer}>
+      <Title size="large" textAlign="center">
+        {title}
+      </Title>
+    </View>
+  );
+};
+
 export const HomeScreen = () => {
   const dispatch = useDispatch();
   const moviesIdsByGenres = useAppSelector(selectMoviesIdsByGenre);
@@ -72,6 +92,8 @@ export const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <SectionList
+        contentContainerStyle={styles.contentContainer}
+        ListHeaderComponent={ListHeaderComponent}
         keyExtractor={keyExtractor}
         sections={moviesIdsByGenres}
         renderSectionHeader={renderSectionHeader}

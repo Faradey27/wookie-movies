@@ -1,4 +1,5 @@
 import React from "react";
+import { IntlProvider } from "react-intl";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import { StatusBar } from "expo-status-bar";
@@ -18,10 +19,12 @@ const App = () => {
   }
   return (
     <Provider store={store}>
-      <SafeAreaProvider>
-        <AppNavigator />
-        <StatusBar />
-      </SafeAreaProvider>
+      <IntlProvider locale="en">
+        <SafeAreaProvider>
+          <AppNavigator />
+          <StatusBar />
+        </SafeAreaProvider>
+      </IntlProvider>
     </Provider>
   );
 };

@@ -3,6 +3,7 @@ import {
   createEntityAdapter,
   createSelector,
   createSlice,
+  PayloadAction,
 } from "@reduxjs/toolkit";
 
 import { fetchMovies, Movie } from "../../api";
@@ -23,8 +24,15 @@ export const moviesSlice = createSlice({
   name: "movies",
   initialState: moviesAdapter.getInitialState({
     loadingState: LoadingState.unset,
+    favoriteMovies: {} as { [key: string]: boolean },
   }),
-  reducers: {},
+  reducers: {
+    toggleFavoriteMovieAction: (state, action: PayloadAction<string>) => {
+      state.favoriteMovies[action.payload] = !state.favoriteMovies[
+        action.payload
+      ];
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(fetchMoviesAsyncAction.pending, (state) => {
       state.loadingState = LoadingState.loading;
@@ -50,6 +58,11 @@ const moviesSelectors = moviesAdapter.getSelectors<State>(
 
 type Genre = {
   [name: string]: Set<string>;
+};
+
+export const moviewsActions = {
+  fetchMoviesAsyncAction,
+  ...moviesSlice.actions,
 };
 
 export const selectMoviesIdsByGenre = createSelector(
@@ -78,3 +91,6 @@ export const selectMoviesIdsByGenre = createSelector(
 );
 
 export const selectMovieById = moviesSelectors.selectById;
+
+export const selectIsFavoriteMovie = (state: State, id: string) =>
+  state.movies.favoriteMovies[id];

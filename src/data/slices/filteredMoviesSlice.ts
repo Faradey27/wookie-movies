@@ -47,4 +47,6 @@ const filteredMoviesSelectors = filteredMoviesAdapter.getSelectors<State>(
   (state) => state.filteredMovies
 );
 
-export const selectFilteredMoviesIds = filteredMoviesSelectors.selectIds;
+export const selectFilteredMoviesIds = filteredMoviesSelectors.selectIds as (
+  state: State
+) => string[];

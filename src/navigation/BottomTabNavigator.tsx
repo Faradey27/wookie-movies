@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import { defineMessages, FormattedMessage } from "react-intl";
 import { Text } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -8,6 +9,17 @@ import { HomeScreen } from "../screens/HomeScreen";
 import { MovieDetailsScreen } from "../screens/MovieDetailsScreen";
 import { SearchScreen } from "../screens/SearchScreen";
 import { HomeStackParamList, Routes } from "./routes";
+
+const messages = defineMessages({
+  home: {
+    id: "BottomTabNavigation.home",
+    defaultMessage: "Home",
+  },
+  search: {
+    id: "BottomTabNavigation.search",
+    defaultMessage: "Search",
+  },
+});
 
 const BottomTab = createBottomTabNavigator();
 
@@ -44,7 +56,9 @@ export const BottomTabNavigator = () => (
       component={HomeNavigator}
       options={{
         tabBarLabel: ({ color }) => (
-          <TabBarLabel color={color}>Home</TabBarLabel>
+          <TabBarLabel color={color}>
+            <FormattedMessage {...messages.home} />
+          </TabBarLabel>
         ),
         tabBarIcon: ({ color }) => (
           <FontAwesome
@@ -61,7 +75,9 @@ export const BottomTabNavigator = () => (
       component={SearchScreen}
       options={{
         tabBarLabel: ({ color }) => (
-          <TabBarLabel color={color}>Search</TabBarLabel>
+          <TabBarLabel color={color}>
+            <FormattedMessage {...messages.search} />
+          </TabBarLabel>
         ),
         tabBarIcon: ({ color }) => (
           <FontAwesome

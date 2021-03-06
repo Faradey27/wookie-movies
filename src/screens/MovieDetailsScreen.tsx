@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { defineMessage, FormattedMessage } from "react-intl";
 import { Animated, StyleSheet, Text, View } from "react-native";
 import { useCollapsibleHeader } from "react-navigation-collapsible";
 import { useRoute } from "@react-navigation/native";
@@ -7,6 +8,21 @@ import { StackHeaderProps } from "@react-navigation/stack";
 import { MovieDetailsHeader } from "../components/MovieDetailsHeader";
 import { selectMovieById, useAppSelector } from "../data";
 import { MovieDetailsRouteProp } from "../navigation/routes";
+
+const messages = defineMessage({
+  movieInfo: {
+    id: "MoviewDetailsScreen.movieInfo",
+    defaultMessage: "{year} | {duration} | {director}",
+  },
+  cast: {
+    id: "MoviewDetailsScreen.cast",
+    defaultMessage: "Cast: {value}",
+  },
+  moviewDescription: {
+    id: "MoviewDetailsScreen.moviewDescription",
+    defaultMessage: "Movie description: {value}",
+  },
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -68,9 +84,6 @@ export const MovieDetailsScreen = () => {
     ? new Date(movieData.released_on).getFullYear()
     : "???";
 
-  const castStr = `Cast: ${movieData?.cast?.join(",")}`;
-  const description = `Movie description: ${movieData?.overview}`;
-
   return (
     <View style={styles.container}>
       <Animated.ScrollView
@@ -78,9 +91,28 @@ export const MovieDetailsScreen = () => {
         scrollIndicatorInsets={scrollIndicatorInsets}
         onScroll={onScroll}
       >
-        <Text>{`${year} | ${movieData?.length} | ${movieData?.director}`}</Text>
-        <Text style={styles.item}>{castStr}</Text>
-        <Text style={styles.item}>{description}</Text>
+        <Text>
+          <FormattedMessage
+            {...messages.movieInfo}
+            values={{
+              year,
+              duration: movieData?.length,
+              director: movieData?.director,
+            }}
+          />
+        </Text>
+        <Text style={styles.item}>
+          <FormattedMessage
+            {...messages.cast}
+            values={{ value: movieData?.cast?.join(", ") }}
+          />
+        </Text>
+        <Text style={styles.item}>
+          <FormattedMessage
+            {...messages.moviewDescription}
+            values={{ value: movieData?.overview }}
+          />
+        </Text>
       </Animated.ScrollView>
     </View>
   );

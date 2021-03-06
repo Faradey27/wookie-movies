@@ -5,6 +5,7 @@ type TitleProps = {
   size?: "small" | "default" | "large";
   color?: string;
   children: string;
+  textAlign?: "auto" | "left" | "right" | "center" | "justify";
 };
 
 const sizeStyles = StyleSheet.create({
@@ -19,6 +20,11 @@ const sizeStyles = StyleSheet.create({
   },
 });
 
-export const Title = ({ size = "default", color, children }: TitleProps) => (
-  <Text style={[sizeStyles[size], { color }]}>{children}</Text>
+export const Title = ({
+  size = "default",
+  textAlign,
+  color,
+  children,
+}: TitleProps) => (
+  <Text style={[sizeStyles[size], { color, textAlign }]}>{children}</Text>
 );

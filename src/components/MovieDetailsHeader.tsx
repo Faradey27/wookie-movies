@@ -1,10 +1,16 @@
-import React from "react";
-import { Image, StyleSheet, View } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
+import React, { useCallback } from "react";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { useDispatch } from "react-redux";
+import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { HeaderBackButton } from "@react-navigation/stack";
 
-import { selectMovieById, useAppSelector } from "../data";
+import {
+  moviewsActions,
+  selectIsFavoriteMovie,
+  selectMovieById,
+  useAppSelector,
+} from "../data";
 import { Title } from "./Title";
 
 type MovieDetailsHeaderProps = {
@@ -51,10 +57,18 @@ const styles = StyleSheet.create({
     width: PREVIEW_IMAGE_WIDTH,
     height: PREVIEW_IMAGE_HEIGHT,
   },
-  backButton: {
+  navigationContainer: {
     position: "absolute",
     top: 8,
     zIndex: 1,
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+  },
+  favoriteButton: {
+    paddingHorizontal: 16,
   },
 });
 
@@ -76,15 +90,23 @@ const generateRatingStars = (rating?: number) => {
     stars[Math.floor(normalizedRating)] = "star-half-empty";
   }
 
-  return stars;
+  return stars.map((name, index) => ({ name, id: index }));
 };
 
 export const MovieDetailsHeader = ({
   id,
   previous,
 }: MovieDetailsHeaderProps) => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
   const movieData = useAppSelector((state) => selectMovieById(state, id));
+  const isFavorite = useAppSelector((state) =>
+    selectIsFavoriteMovie(state, id)
+  );
+
+  const handleToggleFavoriteMoview = useCallback(() => {
+    dispatch(moviewsActions.toggleFavoriteMovieAction(id));
+  }, [dispatch, id]);
 
   if (!movieData) {
     return null;
@@ -95,8 +117,18 @@ export const MovieDetailsHeader = ({
   return (
     <View style={styles.container}>
       {previous && (
-        <View style={styles.backButton}>
+        <View style={styles.navigationContainer}>
           <HeaderBackButton tintColor="white" onPress={navigation.goBack} />
+          <TouchableOpacity
+            style={styles.favoriteButton}
+            onPress={handleToggleFavoriteMoview}
+          >
+            <MaterialIcons
+              name={isFavorite ? "favorite" : "favorite-outline"}
+              size={24}
+              color={isFavorite ? "orange" : "white"}
+            />
+          </TouchableOpacity>
         </View>
       )}
       <View style={styles.titleContainer}>
@@ -105,9 +137,11 @@ export const MovieDetailsHeader = ({
         </Title>
       </View>
       <View style={styles.rating}>
-        {generateRatingStars(movieData.imdb_rating).map((name) => (
-          <FontAwesome name={name} size={20} color="orange" />
-        ))}
+        {generateRatingStars(movieData.imdb_rating).map(
+          ({ name, id: starId }) => (
+            <FontAwesome key={starId} name={name} size={20} color="orange" />
+          )
+        )}
       </View>
       <Image
         source={{ uri: movieData?.backdrop }}
