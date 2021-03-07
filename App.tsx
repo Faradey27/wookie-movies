@@ -12,7 +12,9 @@ import { AppNavigator } from "./src/navigation";
 
 if (Platform.OS === "android") {
   // See https://github.com/expo/expo/issues/6536 for this issue.
+  // eslint-disable-next-line
   if (typeof (Intl as any).__disableRegExpRestore === "function") {
+    // eslint-disable-next-line
     (Intl as any).__disableRegExpRestore();
   }
 }
